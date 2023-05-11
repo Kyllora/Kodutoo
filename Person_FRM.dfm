@@ -69,6 +69,7 @@ object Person_Form: TPerson_Form
     DataField = 'Nimi'
     DataSource = Main_Form.Person_Source
     TabOrder = 1
+    OnChange = DBLabeledEdit2Change
     EditLabel.Width = 29
     EditLabel.Height = 15
     EditLabel.Caption = 'Nimi:'
@@ -83,6 +84,7 @@ object Person_Form: TPerson_Form
     DataField = 'Perenimi'
     DataSource = Main_Form.Person_Source
     TabOrder = 2
+    OnChange = DBLabeledEdit2Change
     EditLabel.Width = 50
     EditLabel.Height = 15
     EditLabel.Caption = 'Perenimi:'

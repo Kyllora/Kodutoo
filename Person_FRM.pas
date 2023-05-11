@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
-  Vcl.ExtCtrls, Vcl.Buttons, Data.DB, FireDAC.Stan.Error;
+  Vcl.ExtCtrls, Vcl.Buttons, Data.DB, FireDAC.Stan.Error, Data.Bind.EngExt,
+  Vcl.Bind.DBEngExt, Data.Bind.Components, Data.Bind.DBScope;
 
 type
   TPerson_Form = class(TForm)
@@ -21,6 +22,7 @@ type
     procedure OK_ButtonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure DBLabeledEdit2Change(Sender: TObject);
   private
     { Private declarations }
     labelDefColor:TColor;
@@ -40,6 +42,20 @@ uses Main_FRM, IsikukoodValideerimine_FNC;
 procedure TPerson_Form.Button2Click(Sender: TObject);
 begin
    Isikukood_Edit.DataSource.DataSet.Cancel;
+end;
+
+procedure TPerson_Form.DBLabeledEdit2Change(Sender: TObject);
+begin
+   // UI lahendus ilma serveri required fieldi-a
+   with TDBLabeledEdit(Sender) do begin
+     if (Length(Text) < 2) or not IsikukoodValideerimine_FNC.ValidatePersonlaCodeEE(Isikukood_Edit.Text) then begin
+        TDBLabeledEdit(Sender).EditLabel.Font.Color:=clRed;
+        OK_Button.Enabled:=False;
+     end else begin
+        TDBLabeledEdit(Sender).EditLabel.Font.Color:=labelDefColor;
+        OK_Button.Enabled:=True;
+     end;
+   end;
 end;
 
 procedure TPerson_Form.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -96,7 +112,6 @@ begin
         EditLabel.Font.Color:=labelDefColor;
         OK_Button.Enabled:=True;
      end;
-
    end;
 end;
 
