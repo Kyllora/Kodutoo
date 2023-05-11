@@ -4,8 +4,7 @@ uses
   Vcl.Forms,
   Person_FRM in 'Person_FRM.pas' {Person_Form},
   Main_FRM in 'Main_FRM.pas' {Main_Form},
-  Seaded_FRM in 'Seaded_FRM.pas' {Seaded_Form},
-  IsikukoodValideerimine_FNC in 'IsikukoodValideerimine_FNC.pas';
+  Seaded_FRM in 'Seaded_FRM.pas' {Seaded_Form};
 
 {$R *.res}
 
