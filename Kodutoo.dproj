@@ -112,6 +112,7 @@
             <Form>Seaded_Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="IsikukoodValideerimine_FNC.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -33,7 +33,7 @@ var
 
 implementation
 
-uses Main_FRM;
+uses Main_FRM, IsikukoodValideerimine_FNC;
 
 {$R *.dfm}
 
@@ -88,7 +88,7 @@ procedure TPerson_Form.Isikukood_EditChange(Sender: TObject);
 begin
    // värvida label kui isikukood pole korras
    with Isikukood_Edit do begin
-     if not Main_Form.ValidatePersonlaCodeEE(Text) then begin
+     if not IsikukoodValideerimine_FNC.ValidatePersonlaCodeEE(Text) then begin
         EditLabel.Font.Color:=clRed;
         OK_Button.Enabled:=False;
      end else begin
