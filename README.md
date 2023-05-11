@@ -4,6 +4,6 @@
 
  Kasutatud:
 
- RAD Studio 11.2 Delphi VCL ja FastReport VCL-a.
+ RAD Studio 11.2 Delphi VCL ja FastReport VCL-a. 
 
 
