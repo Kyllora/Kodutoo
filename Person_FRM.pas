@@ -33,7 +33,7 @@ var
 
 implementation
 
-uses Main_FRM;
+uses Main_FRM, IsikukoodValideerimine_FNC;
 
 {$R *.dfm}
 
@@ -56,7 +56,7 @@ begin
    except
 
        on E:EFDException do begin
-        if E.FDCode = 15 then      //  [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
+        if E.FDCode = 15 then      // [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
            if MessageDlg('Isikukood on juba registris: '+Isikukood_Edit.Text+#13+#13+'Tahad parandada isikukoodi ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrCancel then begin
               CanClose:=True;
               Isikukood_Edit.DataSource.DataSet.Cancel;
@@ -86,9 +86,10 @@ end;
 
 procedure TPerson_Form.Isikukood_EditChange(Sender: TObject);
 begin
+
    // värvida label kui isikukood pole korras
    with Isikukood_Edit do begin
-     if not Main_Form.ValidatePersonlaCodeEE(Text) then begin
+     if not IsikukoodValideerimine_FNC.ValidatePersonlaCodeEE(Text) then begin
         EditLabel.Font.Color:=clRed;
         OK_Button.Enabled:=False;
      end else begin
