@@ -59,7 +59,7 @@ begin
 
      on E:EFDException do begin
         if E.FDCode = 15 then      //  [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
-           if MessageDlg('Isikukood on juba registris ! Tahad parandada isikukoodi ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrCancel then begin
+           if MessageDlg('Isikukood on juba registris: '+Isikukood_Edit.Text+#13+#13+'Tahad parandada isikukoodi ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrCancel then begin
               CanClose:=True;
               Isikukood_Edit.DataSource.DataSet.Cancel;
            end else begin

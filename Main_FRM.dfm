@@ -138,6 +138,10 @@ object Main_Form: TMain_Form
   end
   object Cities_Table: TFDMemTable
     Active = True
+    Constraints = <
+      item
+        FromDictionary = False
+      end>
     FieldDefs = <
       item
         Name = 'Linna_Nimi'
@@ -147,8 +151,9 @@ object Main_Form: TMain_Form
     IndexDefs = <
       item
         Name = 'Cities_TableIndex1'
+        CaseInsFields = 'Linna_Nimi'
         Fields = 'Linna_Nimi'
-        Options = [ixPrimary, ixUnique, ixCaseInsensitive]
+        Options = [ixUnique, ixCaseInsensitive]
       end>
     Indexes = <
       item
@@ -535,11 +540,12 @@ object Main_Form: TMain_Form
     Top = 280
   end
   object Person_Table: TFDMemTable
-    Active = True
     AfterInsert = Person_TableAfterInsert
     BeforeDelete = Person_TableBeforeDelete
     BeforeScroll = Person_TableBeforeScroll
     FilterOptions = [foCaseInsensitive]
+    FieldDefs = <>
+    IndexDefs = <>
     Indexes = <
       item
         Active = True
@@ -565,6 +571,7 @@ object Main_Form: TMain_Form
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
     LocalSQL = FDLocalSQL1
+    StoreDefs = True
     Left = 96
     Top = 224
     object Person_TableIsikukood: TStringField

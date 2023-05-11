@@ -108,8 +108,8 @@ begin
   //syymmddnnnn
   //12345678901
 
-  if (Length(aPersonalCode)=11) and TryStrToInt(Copy(aPersonalCode,1,1),s) and ((s >= 1) and (s <= 8))
-    and TryStrToInt(Copy(aPersonalCode,2,2),yy) and TryStrToInt(Copy(aPersonalCode,4,2),mm) and TryStrToInt(Copy(aPersonalCode,6,2),dd)
+  if (Length(aPersonalCode)=11) and TryStrToInt(Copy(aPersonalCode,1,1),s) and ((s >= 1) and (s <= 8))    // pitkus ja sünniaasta
+    and TryStrToInt(Copy(aPersonalCode,2,2),yy) and TryStrToInt(Copy(aPersonalCode,4,2),mm) and TryStrToInt(Copy(aPersonalCode,6,2),dd) //kuupäev
     and TryStrToInt(Copy(aPersonalCode,8,4),nnnn) then
   begin
 
@@ -127,7 +127,7 @@ end;
 
 procedure TMain_Form.Button1Click(Sender: TObject);
 begin
-  // ava list list
+  // ava raport
   Person_frxDBDataset.Open;
   Person_frxReport.ShowReport(true);
 
@@ -154,8 +154,11 @@ begin
   with Person_Table do begin
     Active:=True;
     Main_Form.Person_Table.AfterInsert := nil;
-    AppendRecord(['36903130040', 'Rami','Kyllönen','Tallinn']);
-    Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert;
+    try
+      AppendRecord(['36903130040', 'RAMI','KYLLÖNEN','Tallinn']);
+    finally
+      Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert;
+    end;
   end;
 
 

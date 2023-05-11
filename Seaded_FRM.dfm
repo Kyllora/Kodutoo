@@ -23,10 +23,9 @@ object Seaded_Form: TSeaded_Form
     TabOrder = 0
     object DBGrid1: TDBGrid
       Left = 2
-      Top = 17
+      Top = 48
       Width = 216
-      Height = 230
-      Align = alClient
+      Height = 199
       DataSource = Main_Form.Cities_Source
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
@@ -38,8 +37,22 @@ object Seaded_Form: TSeaded_Form
         item
           Expanded = False
           FieldName = 'Linna_Nimi'
+          Width = 171
           Visible = True
         end>
+    end
+    object DBNavigator1: TDBNavigator
+      Left = 2
+      Top = 17
+      Width = 216
+      Height = 25
+      DataSource = Main_Form.Cities_Source
+      VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
+      Align = alTop
+      TabOrder = 1
+      ExplicitLeft = -8
+      ExplicitTop = 112
+      ExplicitWidth = 240
     end
   end
   object Button1: TButton

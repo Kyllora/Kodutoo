@@ -14,6 +14,7 @@ type
     Button1: TButton;
     Button2: TButton;
     CheckBox1: TCheckBox;
+    DBNavigator1: TDBNavigator;
     procedure Button2Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
@@ -47,14 +48,16 @@ begin
 
   Main_Form.Person_Table.AfterInsert:=nil;    // event ära
 
-  with Main_Form.Person_Table do
-  for i := 0 to 50 do
-     AppendRecord([GeneratePersonalCode
-       ,AnsiUppercase(nimiArray[Random(aMax)])
-       ,AnsiUpperCase(pereArray[Random(aMax)])
-       ,linnArray[Random(4)]]);
-
-   Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert; // event tagasi
+  try
+    with Main_Form.Person_Table do
+    for i := 0 to 50 do
+       AppendRecord([GeneratePersonalCode
+         ,AnsiUppercase(nimiArray[Random(aMax)])
+         ,AnsiUpperCase(pereArray[Random(aMax)])
+         ,linnArray[Random(4)]]);
+  finally
+    Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert; // event tagasi
+  end;
 end;
 
 
