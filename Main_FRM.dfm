@@ -160,7 +160,8 @@ object Main_Form: TMain_Form
         Active = True
         Name = 'Cities_TableIndex1'
         Fields = 'Linna_Nimi'
-        Options = [soNoCase, soUnique, soPrimary]
+        CaseInsFields = 'Linna_Nimi'
+        Options = [soNoCase, soUnique]
       end>
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
@@ -540,12 +541,47 @@ object Main_Form: TMain_Form
     Top = 280
   end
   object Person_Table: TFDMemTable
+    Active = True
     AfterInsert = Person_TableAfterInsert
     BeforeDelete = Person_TableBeforeDelete
     BeforeScroll = Person_TableBeforeScroll
     FilterOptions = [foCaseInsensitive]
-    FieldDefs = <>
-    IndexDefs = <>
+    FieldDefs = <
+      item
+        Name = 'Isikukood'
+        Attributes = [faRequired]
+        DataType = ftString
+        Size = 11
+      end
+      item
+        Name = 'Nimi'
+        DataType = ftString
+        Size = 30
+      end
+      item
+        Name = 'Perenimi'
+        DataType = ftString
+        Size = 30
+      end
+      item
+        Name = 'Linn'
+        DataType = ftString
+        Size = 30
+      end>
+    IndexDefs = <
+      item
+        Name = 'Isikukood_Index'
+        Fields = 'Isikukood'
+        Options = [ixPrimary, ixUnique]
+      end
+      item
+        Name = 'Nimi_Index'
+        Options = [ixNonMaintained]
+      end
+      item
+        Name = 'Perenimi_Index'
+        Options = [ixNonMaintained]
+      end>
     Indexes = <
       item
         Active = True
@@ -555,11 +591,9 @@ object Main_Form: TMain_Form
       end
       item
         Name = 'Nimi_Index'
-        CaseInsFields = 'Nimi;Perenimi'
       end
       item
         Name = 'Perenimi_Index'
-        CaseInsFields = 'Perenimi;Nimi'
       end>
     IndexFieldNames = 'Perenimi;Nimi'
     ConstraintsEnabled = True
@@ -581,16 +615,20 @@ object Main_Form: TMain_Form
     end
     object Person_TableNimi: TStringField
       FieldName = 'Nimi'
+      Required = True
       OnSetText = Person_TableNimiSetText
       Size = 30
     end
     object Person_TablePerenimi: TStringField
       FieldName = 'Perenimi'
+      Required = True
       OnSetText = Person_TablePerenimiSetText
+      OnValidate = Person_TablePerenimiValidate
       Size = 30
     end
     object Person_TableLinn: TStringField
       FieldName = 'Linn'
+      Required = True
       Size = 30
     end
     object Person_TableLinn_Lookup: TStringField

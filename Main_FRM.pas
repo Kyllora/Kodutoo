@@ -52,6 +52,7 @@ type
     procedure Person_SourceDataChange(Sender: TObject; Field: TField);
     procedure Person_TableNimiSetText(Sender: TField; const Text: string);
     procedure Person_TablePerenimiSetText(Sender: TField; const Text: string);
+    procedure Person_TablePerenimiValidate(Sender: TField);
   private
     { Private declarations }
 
@@ -69,7 +70,7 @@ uses Person_FRM,Seaded_FRM;
 
 {$R *.dfm}
 
-// isikukoodi kontrollimine
+// isikukoodi kontrollimine, parem oleks olla omas unitis
 function TMain_Form.ValidatePersonlaCodeEE(const aPersonalCode:String):Boolean;
 
     // kontrolkoodi kontrolline
@@ -155,7 +156,7 @@ begin
     Active:=True;
     Main_Form.Person_Table.AfterInsert := nil;
     try
-      AppendRecord(['36903130040', 'RAMI','KYLLÖNEN','Tallinn']);
+      AppendRecord(['36903130444', 'RAMI','KYLLÖNEN','Tallinn']);
     finally
       Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert;
     end;
@@ -202,13 +203,22 @@ end;
 procedure TMain_Form.Person_TableNimiSetText(Sender: TField;
   const Text: string);
 begin
-   Sender.AsString:=AnsiUpperCase(Text); // suured tähed
+   Sender.AsString:=Trim(AnsiUpperCase(Text)); // suured tähed
 end;
 
 procedure TMain_Form.Person_TablePerenimiSetText(Sender: TField;
   const Text: string);
 begin
-  Sender.AsString:=AnsiUpperCase(Text);
+  Sender.AsString:=Trim(AnsiUpperCase(Text));
+end;
+
+procedure TMain_Form.Person_TablePerenimiValidate(Sender: TField);
+begin
+{
+  // EI TÖÖTA ILMSELET MEMORY TABLE JÄRGI
+  if Trim(Sender.AsString)='' then
+     raise Exception.Create(Sender.DisplayName + ' on tühi !');
+ }
 end;
 
 procedure TMain_Form.SearchBoxInvokeSearch(Sender: TObject);

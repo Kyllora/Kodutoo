@@ -48,16 +48,14 @@ begin
    CanClose:=True;
 
    try
+
      with  Isikukood_Edit.DataSource.DataSet do
      if State in [dsEdit,dsInsert] then
        Post;
+
    except
 
-     {on E:EFDDBEngineException do begin
-        showmessage('EFDDBEngineException');
-     end;    }
-
-     on E:EFDException do begin
+       on E:EFDException do begin
         if E.FDCode = 15 then      //  [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
            if MessageDlg('Isikukood on juba registris: '+Isikukood_Edit.Text+#13+#13+'Tahad parandada isikukoodi ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrCancel then begin
               CanClose:=True;
