@@ -14,7 +14,8 @@ uses
   FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.VCLUI.Error,
   FireDAC.Comp.UI, Vcl.Mask, frxClass, frxDBSet, Vcl.BaseImageCollection,
   Vcl.ImageCollection, Datasnap.DBClient, Vcl.TitleBarCtrls,
-  Vcl.PlatformDefaultStyleActnCtrls, System.Actions, Vcl.ActnList, Vcl.ActnMan;
+  Vcl.PlatformDefaultStyleActnCtrls, System.Actions, Vcl.ActnList, Vcl.ActnMan,
+  FireDAC.Phys.SQLiteVDataSet;
 
 type
   TMain_Form = class(TForm)
@@ -32,24 +33,25 @@ type
     Person_TablePerenimi: TStringField;
     Person_TableLinn: TStringField;
     Person_TableLinn_Lookup: TStringField;
-    ActionManager1: TActionManager;
     Panel1: TPanel;
     SearchBox: TSearchBox;
     DBNavigator1: TDBNavigator;
     Button1: TButton;
     Button2: TButton;
+    FDLocalSQL1: TFDLocalSQL;
+    FDConnection1: TFDConnection;
+    FDGUIxErrorDialog1: TFDGUIxErrorDialog;
     procedure FormShow(Sender: TObject);
-    procedure Person_TableIsikukoodValidate(Sender: TField);
     procedure SearchBoxInvokeSearch(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Person_TableBeforeScroll(DataSet: TDataSet);
     procedure Person_TableAfterInsert(DataSet: TDataSet);
     procedure Person_TableBeforeDelete(DataSet: TDataSet);
-    procedure Person_TablePostError(DataSet: TDataSet; E: EDatabaseError;
-      var Action: TDataAction);
     procedure Person_DBGridTitleClick(Column: TColumn);
     procedure Button2Click(Sender: TObject);
     procedure Person_SourceDataChange(Sender: TObject; Field: TField);
+    procedure Person_TableNimiSetText(Sender: TField; const Text: string);
+    procedure Person_TablePerenimiSetText(Sender: TField; const Text: string);
   private
     { Private declarations }
 
@@ -115,8 +117,9 @@ begin
 
     Result:= IsValidDate(yy,mm,dd) and ControlCode(aPersonalCode);    ;  // kas on päris DateTime ja kontrolli koood öige
 
-  end else
-       Result:= False;
+  end
+  else
+    Result:= False;
 
 end;
 
@@ -150,7 +153,9 @@ begin
 
   with Person_Table do begin
     Active:=True;
-    //AppendRecord(['36903130040', 'Rami','Kyllönen','Tallinn']);
+    Main_Form.Person_Table.AfterInsert := nil;
+    AppendRecord(['36903130040', 'Rami','Kyllönen','Tallinn']);
+    Main_Form.Person_Table.AfterInsert := Main_Form.Person_TableAfterInsert;
   end;
 
 
@@ -158,13 +163,17 @@ end;
 
 procedure TMain_Form.Person_DBGridTitleClick(Column: TColumn);
 begin
-   // gridi järjekorra muutmine
-   Person_Table.IndexFieldNames :=Column.Field.FieldName;
+  // gridi järjekorra muutmine
+  if Column.Field.FieldKind = fkLookup then
+    Person_Table.IndexFieldNames :=Column.Field.KeyFields;
+
+  if Column.Field.FieldKind = fkData then
+    Person_Table.IndexFieldNames :=Column.Field.FieldName;
 end;
 
 procedure TMain_Form.Person_SourceDataChange(Sender: TObject; Field: TField);
 begin
-  StatusBar1.SimpleText:=' '+Person_Table.RecordCount.ToString+' rekordi';
+  StatusBar1.SimpleText:=' '+Person_Table.RecordCount.ToString+' persons';
 end;
 
 procedure TMain_Form.Person_TableAfterInsert(DataSet: TDataSet);
@@ -174,47 +183,37 @@ end;
 
 procedure TMain_Form.Person_TableBeforeDelete(DataSet: TDataSet);
 begin
-   if MessageDlg('Kas olete kindel, et soovite teabe kustutada ? ', mtWarning,[mbOk,mbCancel],0,mbOk) <> mrOk then Abort;
+   if MessageDlg('Kas olete kindel, et soovite personi kustutada ? ', mtWarning,[mbOk,mbCancel],0,mbOk) <> mrOk then Abort;
 end;
 
 procedure TMain_Form.Person_TableBeforeScroll(DataSet: TDataSet);
 begin
 
   if DataSet.State in [dsEdit] then
-    if MessageDlg('Andmeid on muudetud, kas need tuleks salvestada ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrOk then
+    if MessageDlg('Andmeid on muudetud, kas nad tuleks salvestada ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrOk then
       DataSet.Post
     else
       DataSet.Cancel;
 end;
 
-procedure TMain_Form.Person_TableIsikukoodValidate(Sender: TField);
+procedure TMain_Form.Person_TableNimiSetText(Sender: TField;
+  const Text: string);
 begin
-  // see ei töötanud hästi, Person_formii saanud kinni ainult ESC -ga kuivalideerimine = false
-{
-  if not ValidatePersonlaCodeEE(Sender.AsString) then begin
-    ShowMessage('Isikkukood on valesti !');
-    Abort;
-  end;       }
-
+   Sender.AsString:=AnsiUpperCase(Text); // suured tähed
 end;
 
-procedure TMain_Form.Person_TablePostError(DataSet: TDataSet; E: EDatabaseError;
-  var Action: TDataAction);
+procedure TMain_Form.Person_TablePerenimiSetText(Sender: TField;
+  const Text: string);
 begin
-   // [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
-   if Pos('Duplicate row found on unique index',E.Message)>0 then begin     // kindlasti on parem lahendus olemas, aga ma ei seda jäänud otsima, koleegid kindlasti tiatvad
-     MessageDlg('Isikukood on juba registris !', mtWarning,[mbOk],0,mbOk);
-     Abort;
-   end;
-
+  Sender.AsString:=AnsiUpperCase(Text);
 end;
 
 procedure TMain_Form.SearchBoxInvokeSearch(Sender: TObject);
 var stext:String;
 begin
+  // otsimine köigide fieldide järgi
 
-  // otsingu text
-  stext:=QuotedStr(TSearchBox(Sender).Text+'%');
+  stext:=QuotedStr(TSearchBox(Sender).Text+'%');  // otsingu text
 
   if stext <> QuotedStr('%') then  // kui otsing text on tühi
   with Person_Table do begin

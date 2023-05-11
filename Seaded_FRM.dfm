@@ -47,7 +47,7 @@ object Seaded_Form: TSeaded_Form
     Top = 8
     Width = 161
     Height = 48
-    Caption = 'Genereeri demo data'
+    Caption = 'Genereeri demodata'
     TabOrder = 1
     OnClick = Button1Click
   end

@@ -1,10 +1,12 @@
 object Main_Form: TMain_Form
   Left = 0
   Top = 0
-  Caption = 'Isikurekister'
+  Caption = 'Isikuregister'
   ClientHeight = 372
-  ClientWidth = 599
+  ClientWidth = 606
   Color = clBtnFace
+  Constraints.MinHeight = 370
+  Constraints.MinWidth = 606
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -16,7 +18,7 @@ object Main_Form: TMain_Form
   object Person_DBGrid: TDBGrid
     Left = 0
     Top = 41
-    Width = 599
+    Width = 606
     Height = 312
     Align = alClient
     DataSource = Person_Source
@@ -62,7 +64,7 @@ object Main_Form: TMain_Form
   object StatusBar1: TStatusBar
     Left = 0
     Top = 353
-    Width = 599
+    Width = 606
     Height = 19
     Panels = <
       item
@@ -70,14 +72,14 @@ object Main_Form: TMain_Form
         Width = 50
       end>
     SimplePanel = True
-    SimpleText = 'Rekordi'
-    ExplicitTop = 383
-    ExplicitWidth = 651
+    SimpleText = 'Isiku '
+    ExplicitTop = 352
+    ExplicitWidth = 602
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 599
+    Width = 606
     Height = 41
     Align = alTop
     BevelEdges = []
@@ -88,6 +90,7 @@ object Main_Form: TMain_Form
     ParentCtl3D = False
     ShowCaption = False
     TabOrder = 2
+    ExplicitWidth = 602
     object SearchBox: TSearchBox
       Left = 238
       Top = 11
@@ -110,18 +113,18 @@ object Main_Form: TMain_Form
     end
     object Button1: TButton
       Left = 400
-      Top = 10
+      Top = 11
       Width = 75
-      Height = 25
+      Height = 21
       Caption = 'Tr'#252'ki'
       TabOrder = 2
       OnClick = Button1Click
     end
     object Button2: TButton
       Left = 489
-      Top = 10
+      Top = 11
       Width = 75
-      Height = 25
+      Height = 21
       Caption = 'Seaded'
       TabOrder = 3
       OnClick = Button2Click
@@ -147,12 +150,20 @@ object Main_Form: TMain_Form
         Fields = 'Linna_Nimi'
         Options = [ixPrimary, ixUnique, ixCaseInsensitive]
       end>
+    Indexes = <
+      item
+        Active = True
+        Name = 'Cities_TableIndex1'
+        Fields = 'Linna_Nimi'
+        Options = [soNoCase, soUnique, soPrimary]
+      end>
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvSilentMode]
     ResourceOptions.SilentMode = True
     UpdateOptions.AssignedValues = [uvCheckRequired]
     UpdateOptions.CheckRequired = False
+    LocalSQL = FDLocalSQL1
     StoreDefs = True
     Left = 184
     Top = 224
@@ -290,7 +301,7 @@ object Main_Form: TMain_Form
           Fill.BackColor = clGray
           HAlign = haCenter
           Memo.UTF8W = (
-            'Isikulist')
+            'Isiku raport')
           ParentFont = False
           Style = 'Title'
           VAlign = vaCenter
@@ -528,7 +539,6 @@ object Main_Form: TMain_Form
     AfterInsert = Person_TableAfterInsert
     BeforeDelete = Person_TableBeforeDelete
     BeforeScroll = Person_TableBeforeScroll
-    OnPostError = Person_TablePostError
     FilterOptions = [foCaseInsensitive]
     Indexes = <
       item
@@ -545,6 +555,7 @@ object Main_Form: TMain_Form
         Name = 'Perenimi_Index'
         CaseInsFields = 'Perenimi;Nimi'
       end>
+    IndexFieldNames = 'Perenimi;Nimi'
     ConstraintsEnabled = True
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
@@ -553,20 +564,22 @@ object Main_Form: TMain_Form
     UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
+    LocalSQL = FDLocalSQL1
     Left = 96
     Top = 224
     object Person_TableIsikukood: TStringField
       FieldName = 'Isikukood'
       Required = True
-      OnValidate = Person_TableIsikukoodValidate
       Size = 11
     end
     object Person_TableNimi: TStringField
       FieldName = 'Nimi'
+      OnSetText = Person_TableNimiSetText
       Size = 30
     end
     object Person_TablePerenimi: TStringField
       FieldName = 'Perenimi'
+      OnSetText = Person_TablePerenimiSetText
       Size = 30
     end
     object Person_TableLinn: TStringField
@@ -585,9 +598,25 @@ object Main_Form: TMain_Form
       Lookup = True
     end
   end
-  object ActionManager1: TActionManager
-    Left = 296
-    Top = 192
-    StyleName = 'Platform Default'
+  object FDLocalSQL1: TFDLocalSQL
+    Connection = FDConnection1
+    Active = True
+    DataSets = <>
+    Left = 96
+    Top = 144
+  end
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'DriverID=SQLite')
+    Connected = True
+    LoginPrompt = False
+    Left = 184
+    Top = 144
+  end
+  object FDGUIxErrorDialog1: TFDGUIxErrorDialog
+    Provider = 'Forms'
+    Caption = 'FireDAC Executor Error'
+    Left = 288
+    Top = 280
   end
 end

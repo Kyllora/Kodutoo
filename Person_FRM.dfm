@@ -2,7 +2,7 @@ object Person_Form: TPerson_Form
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Isikuandmet lis'#228'mine'
+  Caption = 'Isikuandme lis'#228'mine'
   ClientHeight = 218
   ClientWidth = 367
   Color = clBtnFace

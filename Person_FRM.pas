@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
-  Vcl.ExtCtrls, Vcl.Buttons, Data.DB;
+  Vcl.ExtCtrls, Vcl.Buttons, Data.DB, FireDAC.Stan.Error;
 
 type
   TPerson_Form = class(TForm)
@@ -44,8 +44,41 @@ end;
 
 procedure TPerson_Form.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  // suletakse kui on post läinud läpi
-  // CanClose:= not (Isikukood_Edit.DataSource.State in [dsInsert]);
+
+   CanClose:=True;
+
+   try
+     with  Isikukood_Edit.DataSource.DataSet do
+     if State in [dsEdit,dsInsert] then
+       Post;
+   except
+
+     {on E:EFDDBEngineException do begin
+        showmessage('EFDDBEngineException');
+     end;    }
+
+     on E:EFDException do begin
+        if E.FDCode = 15 then      //  [FireDAC][DatS]-15. Duplicate row found on unique index. Constraint [_FD_UC_View]
+           if MessageDlg('Isikukood on juba registris ! Tahad parandada isikukoodi ?', mtWarning,[mbOk,mbCancel],0,mbOk) = mrCancel then begin
+              CanClose:=True;
+              Isikukood_Edit.DataSource.DataSet.Cancel;
+           end else begin
+              CanClose:=False;
+              Isikukood_Edit.SetFocus;
+           end
+        else
+           MessageDlg(E.Message+#13+E.FDCode.ToString, mtError,[mbOk],0,mbOk);
+     end;
+
+     on E:Exception do begin
+         Isikukood_Edit.DataSource.DataSet.Cancel;
+         CanClose:=True;
+         MessageDlg(E.Message, mtError,[mbOk],0,mbOk);
+     end;
+
+
+   end;
+
 end;
 
 procedure TPerson_Form.FormCreate(Sender: TObject);
@@ -70,11 +103,8 @@ end;
 
 procedure TPerson_Form.OK_ButtonClick(Sender: TObject);
 begin
-   try
-     Isikukood_Edit.DataSource.DataSet.Post;
-   finally
-     Close;
-   end;
+
+  Close;
 end;
 
 end.
